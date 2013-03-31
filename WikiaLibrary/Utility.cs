@@ -21,6 +21,8 @@ namespace WikiaLibrary
                 try
                 {
                     await login.Run();
+                    if (login.IsError)
+                        return false;
                 }
                 catch (HttpRequestException)
                 {
@@ -52,6 +54,8 @@ namespace WikiaLibrary
                     try
                     {
                         await login.Run();
+                        if (login.IsError)
+                            return false;
                     }
                     catch (HttpRequestException)
                     {
@@ -81,6 +85,8 @@ namespace WikiaLibrary
         {
             var editToken = new EditToken(client);
             await editToken.Run();
+            if (editToken.IsError)
+                return null;
             return editToken.Token;
         }
 
@@ -161,11 +167,15 @@ namespace WikiaLibrary
             {
                 var query = new GetAllImages(client, list);
                 await query.Run();
-
-                while (query.ContinueFrom != null)
+                if (query.IsError == false)
                 {
-                    query = new GetAllImages(client, list, query.ContinueFrom);
-                    await query.Run();
+                    while (query.ContinueFrom != null)
+                    {
+                        query = new GetAllImages(client, list, query.ContinueFrom);
+                        await query.Run();
+                        if (query.IsError)
+                            break;
+                    }
                 }
 
                 return list.ToArray();

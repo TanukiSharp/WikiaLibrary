@@ -43,6 +43,13 @@ namespace WikiaLibrary
 
         public Cookie[] SetCookie { get; private set; }
 
+        public string RawResult { get; private set; }
+
+        public bool IsError { get; private set; }
+
+        public string ErrorCode { get; private set; }
+        public string ErrorInfo { get; private set; }
+
         private const string BaseUrl = "api.php";
 
         public Task Run()
@@ -81,11 +88,29 @@ namespace WikiaLibrary
                 var xml = XElement.Parse(content);
 
                 if (xml != null)
-                    OnResponse(xml);
+                    OnResponseInternal(xml);
             }
         }
 
-        protected abstract void OnResponse(XElement element);
+        private void OnResponseInternal(XElement element)
+        {
+            RawResult = element.ToString();
+
+            var error = element.Element("error");
+            if (error != null)
+            {
+                IsError = true;
+                ErrorCode = (string)error.Attribute("code");
+                ErrorInfo = (string)error.Attribute("info");
+
+                OnError(ErrorCode, ErrorInfo);
+            }
+            else
+                OnResponse(element);
+        }
+
+        protected virtual void OnError(string errorCode, string errorInfo) { }
+        protected virtual void OnResponse(XElement element) { }
 
         private Cookie[] ParseCookies(IEnumerable<string> values)
         {

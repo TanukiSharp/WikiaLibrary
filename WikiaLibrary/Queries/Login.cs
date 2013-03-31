@@ -36,6 +36,8 @@ namespace WikiaLibrary.Queries
         protected override void OnResponse(XElement element)
         {
             var login = element.Element("login");
+            if (login == null)
+                return;
 
             Result = (string)login.Attribute("result");
             Token = (string)login.Attribute("token");

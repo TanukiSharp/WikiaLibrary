@@ -17,15 +17,9 @@ namespace WikiaLibrary.Queries
 
         public bool IsSuccess { get; private set; }
         public bool IsWarning { get; private set; }
-        public bool IsError { get; private set; }
-
-        public string ErrorCode { get; private set; }
-        public string ErrorInfo { get; private set; }
 
         public bool IsDuplicate { get; private set; }
         public string DuplicatingFile { get; private set; }
-
-        public string RawResult { get; private set; }
 
         protected override void OnResponse(XElement element)
         {
@@ -34,17 +28,6 @@ namespace WikiaLibrary.Queries
               <error code="notoken" info="The token parameter must be set" /> 
             </api>
             */
-
-            RawResult = element.ToString();
-
-            var error = element.Element("error");
-            if (error != null)
-            {
-                IsError = true;
-                ErrorCode = (string)error.Attribute("code");
-                ErrorInfo = (string)error.Attribute("info");
-                return;
-            }
 
             var upload = element.Element("upload");
             if (upload != null)
