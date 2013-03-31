@@ -80,7 +80,8 @@ namespace WikiaLibrary
                 var content = await response.Content.ReadAsStringAsync();
                 var xml = XElement.Parse(content);
 
-                OnResponse(xml);
+                if (xml != null)
+                    OnResponse(xml);
             }
         }
 

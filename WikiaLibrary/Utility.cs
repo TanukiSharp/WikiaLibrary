@@ -18,7 +18,14 @@ namespace WikiaLibrary
 
             while (true)
             {
-                await login.Run();
+                try
+                {
+                    await login.Run();
+                }
+                catch (HttpRequestException)
+                {
+                    return false;
+                }
 
                 if (login.Result == "Throttled")
                     await Task.Delay(login.WaitTime * 1000);
@@ -42,7 +49,14 @@ namespace WikiaLibrary
 
                 while (true)
                 {
-                    await login.Run();
+                    try
+                    {
+                        await login.Run();
+                    }
+                    catch (HttpRequestException)
+                    {
+                        return false;
+                    }
 
                     if (login.Result == "Throttled")
                         await Task.Delay(login.WaitTime * 1000);
